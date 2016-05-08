@@ -23,6 +23,7 @@ For more terminal shell goodness, please also see this list's sister list [Aweso
     - [Mail](#mail)
     - [Safari](#safari)
     - [Sketch](#sketch)
+    - [Skim](#skim)
     - [TextEdit](#textedit)
 - [Backup](#backup)
     - [Time Machine](#time-machine)
@@ -56,6 +57,7 @@ For more terminal shell goodness, please also see this list's sister list [Aweso
     - [DHCP](#dhcp)
     - [DNS](#dns)
     - [Hostname](#hostname)
+    - [Network Preferences](#network-preferences)
     - [Networking Tools](#networking-tools)
     - [TCP/IP](#tcpip)
     - [Wi-Fi](#wi-fi)
@@ -75,6 +77,7 @@ For more terminal shell goodness, please also see this list's sister list [Aweso
     - [AppleScript](#applescript)
     - [Basics](#basics)
     - [Clipboard](#clipboard)
+	- [Date and Time](#date-and-time)
     - [FileVault](#filevault)
     - [Information/Reports](#informationreports)
     - [Kernel Extensions](#kernel-extensions)
@@ -92,7 +95,6 @@ For more terminal shell goodness, please also see this list's sister list [Aweso
     - [Software Update](#software-update)
     - [Spotlight](#spotlight)
     - [System Integrity Protection](#system-integrity-protection)
-    - [Time and Date](#time-and-date)
 - [Terminal](#terminal)
     - [Alternative Terminals](#alternative-terminals)
     - [Shells](#shells)
@@ -194,7 +196,7 @@ Speed up Mail.app by vacuuming the Envelope Index
 Code from: http://www.hawkwings.net/2007/03/03/scripts-to-automate-the-mailapp-envelope-speed-trick/
 Originally by "pmbuko" with modifications by Romulo
 Updated by Brett Terpstra 2012
-Updated by Mathias Törnblom 2015 to support V3 in El Capitan and still keep backwards compability
+Updated by Mathias Törnblom 2015 to support V3 in El Capitan and still keep backwards compatibility
 *)
 
 tell application "Mail" to quit
@@ -236,6 +238,14 @@ osascript -e 'tell application "Safari" to get URL of current tab of front windo
 #### Export Compact SVGs
 ```bash
 defaults write com.bohemiancoding.sketch3 exportCompactSVG -bool yes
+```
+
+### Skim
+
+#### Turn Off Auto Reload Dialog
+Removes the dialog and defaults to auto reload.
+```bash
+defaults write -app Skim SKAutoReloadFileUpdate -boolean true
 ```
 
 ### TextEdit
@@ -414,6 +424,36 @@ defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-t
 killall Dock
 ```
 
+#### Icon Bounce
+Global setting whether Dock icons should bounce when the respective application demands your attention.
+```bash
+# Enable (Default)
+defaults write com.apple.dock no-bouncing -bool true && \
+killall Dock
+
+# Disable
+defaults write com.apple.dock no-bouncing -bool false && \
+killall Dock
+```
+
+#### Reset Dock
+```bash
+defaults delete com.apple.dock && \
+killall Dock
+```
+
+#### Scroll Gestures
+Use your touchpad or mouse scroll wheel to interact with Dock items. Allows you to use an upward scrolling gesture to open stacks. Using the same gesture on applications that are running invokes Exposé/Mission Control.
+```bash
+# Enable
+defaults write com.apple.dock scroll-to-open -bool true && \
+killall Dock
+
+# Disable (Default)
+defaults write com.apple.dock scroll-to-open -bool false && \
+killall Dock
+```
+
 #### Set Auto Show/Hide Delay
 The float number defines the show/hide delay in ms.
 ```bash
@@ -491,6 +531,18 @@ killall Finder
 ```
 
 ### Layout
+
+#### Show "Quit Finder" Menu Item
+Makes possible to see Finder menu item "Quit Finder" with default shortcut <kbd>Cmd</kbd> + <kbd>Q</kbd>
+```bash
+# Enable
+defaults write com.apple.finder QuitMenuItem -bool true && \
+killall Finder
+
+# Disable (Default)
+defaults write com.apple.finder QuitMenuItem -bool false && \
+killall Finder
+```
 
 #### Smooth Scrolling
 Useful if you’re on an older Mac that messes up the animation.
@@ -599,7 +651,7 @@ cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as al
 
 #### Open URL
 ```bash
-open http://www.github.com
+open https://github.com
 ```
 
 #### Open File
@@ -610,7 +662,7 @@ open README.md
 #### Open Applications
 You can open applications using `-a`.
 ```bash
-open -a "Google Chrome" http://www.github.com
+open -a "Google Chrome" https://github.com
 ```
 
 #### Open Folder
@@ -799,6 +851,12 @@ defaults write NSGlobalDomain KeyRepeat -int 0.02
 afconvert input.mp3 ringtone.m4r -f m4af
 ```
 
+#### Create Audiobook From Text
+Uses "Alex" voice, a plain UTF-8 encoded text file for input and AAC output.
+```bash
+say -v Alex -f file.txt -o "output.m4a"
+```
+
 #### Disable Sound Effects on Boot
 ```bash
 sudo nvram SystemAudioVolume=" "
@@ -840,10 +898,10 @@ defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen 1
 #### Bonjour Service
 ```bash
 # Disable
-sudo defaults write /System/Library/LaunchDaemons/com.apple.mDNSResponder ProgramArguments -array-add "-NoMulticastAdvertisements"
+sudo defaults write /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist ProgramArguments -array-add "-NoMulticastAdvertisements"
 
 # Enable (Default)
-sudo defaults write /System/Library/LaunchDaemons/com.apple.mDNSResponder ProgramArguments -array "/usr/sbin/mDNSResponder" "-launchd"
+sudo defaults write /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist ProgramArguments -array "/usr/sbin/mDNSResponder" "-launchd"
 ```
 
 ### DHCP
@@ -874,6 +932,18 @@ sudo scutil --set ComputerName "newhostname" && \
 sudo scutil --set HostName "newhostname" && \
 sudo scutil --set LocalHostName "newhostname" && \
 sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "newhostname"
+```
+
+### Network Preferences
+
+#### Network Locations
+Switch between network locations created in the Network preference pane.
+```bash
+# Status
+scselect
+
+# Switch Network Location
+scselect LocationNameFromStatus
 ```
 
 ### Networking Tools
@@ -1384,6 +1454,11 @@ mdutil -E /path/to/volume
 mdfind -name 'searchterm'
 ```
 
+#### Show Spotlight Indexed Metadata
+```bash
+mdls /path/to/file
+```
+
 ### System Integrity Protection
 
 #### Disable System Integrity Protection
@@ -1398,8 +1473,19 @@ Reboot while holding <kbd>Cmd</kbd> + <kbd>R</kbd>, open the Terminal applicatio
 csrutil enable && reboot
 ```
 
-### Time and Date
+### Date and Time
 
+#### List Available Timezones
+```bash
+sudo systemsetup -listtimezones
+```
+
+#### Set Timezone
+```bash
+sudo systemsetup -settimezone Europe/Berlin
+```
+
+#### Set Clock Using Network Time
 ```bash
 # Status
 sudo systemsetup getusingnetworktime
@@ -1410,6 +1496,8 @@ sudo systemsetup setusingnetworktime on
 # Disable
 sudo systemsetup setusingnetworktime off
 ```
+
+
 
 ## Terminal
 
@@ -1435,16 +1523,19 @@ chsh -s $(brew --prefix)/bin/bash
 ```
 
 - [Homepage](https://www.gnu.org/software/bash/) - The default shell for OS X and most other Unix-based operating systems.
+- [Bash-it](https://github.com/Bash-it/bash-it) - Community Bash framework, like Oh My Zsh for Bash.
 
 #### fish
 Install the latest version and set as current users' default shell:
 ```bash
 brew install fish && \
+echo $(brew --prefix)/bin/fish | sudo tee -a /etc/shells && \
 chsh -s $(brew --prefix)/bin/fish
 ```
 
 - [Homepage](http://fishshell.com) - A smart and user-friendly command line
 shell for OS X, Linux, and the rest of the family.
+- [Fisherman](http://fisherman.sh) - A blazing fast, modern plugin manager for Fish.
 - [The Fishshell Framework](https://github.com/oh-my-fish/oh-my-fish) - Provides core infrastructure to allow you to install packages which extend or modify the look of your shell.
 
 #### Zsh
@@ -1463,6 +1554,7 @@ chsh -s $(brew --prefix)/bin/zsh
 ### Terminal Fonts
 
 - [Anonymous Pro](http://www.marksimonson.com/fonts/view/anonymous-pro) - A family of four fixed-width fonts designed with coding in mind.
+- [Codeface](https://github.com/chrissimpkins/codeface) - A gallery and repository of monospaced fonts for developers.
 - [DejaVu Sans Mono](http://dejavu-fonts.org/wiki/Main_Page) - A font family based on the Vera Fonts.
 - [Hack](http://sourcefoundry.org/hack/) - Hack is hand groomed and optically balanced to be your go-to code face.
 - [Inconsolata](http://levien.com/type/myfonts/inconsolata.html) -  A monospace font, designed for code listings and the like.
@@ -1474,4 +1566,4 @@ chsh -s $(brew --prefix)/bin/zsh
 
 ## License
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://licensebuttons.net/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
